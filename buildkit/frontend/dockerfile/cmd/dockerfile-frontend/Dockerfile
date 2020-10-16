@@ -26,9 +26,10 @@ RUN --mount=target=. --mount=type=cache,target=/root/.cache \
   CGO_ENABLED=0 go build -o /dockerfile-frontend -ldflags "-d $(cat /tmp/.ldflags)" -tags "$BUILDTAGS netgo static_build osusergo" ./frontend/dockerfile/cmd/dockerfile-frontend && \
   file /dockerfile-frontend | grep "statically linked"
 
-FROM scratch AS release
+FROM alpine AS release
 LABEL moby.buildkit.frontend.network.none="true"
 COPY --from=build /dockerfile-frontend /bin/dockerfile-frontend
+RUN echo -e "#!/bin/sh\ncat -" > /preprocessor && chmod +x /preprocessor # that was the easiest way to have CAT!
 ENTRYPOINT ["/bin/dockerfile-frontend"]
 
 

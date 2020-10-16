@@ -66,6 +66,10 @@ func Dockerfile2LLB(ctx context.Context, dt []byte, opt ConvertOpt) (*llb.State,
 	if len(dt) == 0 {
 		return nil, nil, errors.Errorf("the Dockerfile cannot be empty")
 	}
+	dt, err := PreprocessDockerfile(dt)
+	if err != nil {
+		return nil, nil, err
+	}
 
 	if opt.ContextLocalName == "" {
 		opt.ContextLocalName = defaultContextLocalName
